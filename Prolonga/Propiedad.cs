@@ -8,10 +8,12 @@ namespace Prolonga
 {
     internal class Propiedad : Hecho
     {
-        string atomo = "";
-        public Propiedad(string textoClausula, Compound compound) : base(textoClausula,compound)
+        Termino termino;
+        Compound compound;
+        public Propiedad(string textoClausula, Compound compound) : base(textoClausula)
         {
-            this.atomo = compound.terminos[0];
+            this.termino = compound.terminos[0];
+            this.compound = compound;
         }
         public override string ToString()
         {

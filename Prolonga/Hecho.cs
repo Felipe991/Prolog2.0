@@ -8,10 +8,14 @@ namespace Prolonga
 {
     internal class Hecho : Clausula
     {
-        public Compound compound;
-        public Hecho(string predicadoPrincipal, Compound compound) : base(predicadoPrincipal)
+        public Hecho(string predicadoPrincipal) : base(predicadoPrincipal)
         {
-            this.compound = compound;
+        }
+
+        public override string ToString()
+        {
+            return "\nTipo clausula: Hecho" +
+                "\nPredicado = " + predicadoPrincipal;
         }
     }
 }

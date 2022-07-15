@@ -9,13 +9,30 @@ namespace Prolonga
     internal class Regla : Clausula
     {
         List<Compound> compoundsAntecedentes;
-        List<string> operadoresRegla;
+        List<List<Compound>> condiciones;
         Compound compoundPrincipal;
         public Regla(string predicadoPrincipal,List<Compound> compounds, List<string> operadoresRegla) : base(predicadoPrincipal)
         {
             compoundPrincipal = compounds[0];
             compoundsAntecedentes = compounds.Skip(1).ToList();
-            this.operadoresRegla = operadoresRegla;
+            condiciones = new List<List<Compound>>();
+            enlistCondiciones(compoundsAntecedentes,operadoresRegla);
+        }
+
+        private void enlistCondiciones(List<Compound> compoundAntecedentes, List<string> operadoresRegla)
+        {
+            List<Compound> condicion = new List<Compound>();
+            condicion.Add(compoundAntecedentes[0]);
+            for(int contador = 0;contador<operadoresRegla.Count;contador++)
+            {
+                if (operadoresRegla[contador].Equals(";"))
+                {
+                    condiciones.Add(condicion.ToList());
+                    condicion.Clear();
+                }
+                condicion.Add(compoundAntecedentes[contador+1]);
+            }
+            condiciones.Add(condicion.ToList());
         }
 
         public override string ToString()
@@ -23,26 +40,21 @@ namespace Prolonga
             return "\nTipo clausula: Regla" +
                    "\nPredicado principal: " + predicadoPrincipal +
                    "\nCompound principal: " + this.compoundPrincipal.ToString()+
-                   "\nCompounds Antecedentes: " + getDatosCompounds()+
-                   "\nSeparadores logicos: " + getSeparadoresLogicos();
-        }
-
-        private string getSeparadoresLogicos()
-        {
-            string separadoresLogicos = "";
-            foreach(string separadorLogico in this.operadoresRegla)
-            {
-                separadoresLogicos += separadorLogico + " ";
-            }
-            return separadoresLogicos;
+                   "\nCompounds Antecedentes: " + getDatosCompounds();
         }
 
         private string getDatosCompounds()
         {
             string datosCompounds = "";
-            foreach (Compound compound in compoundsAntecedentes)
+            int contador = 1;
+            foreach (List<Compound> condicion in condiciones)
             {
-                datosCompounds += compound.ToString() + "\n";
+                datosCompounds += "\nCondicion N(" + contador + ")\n";
+                foreach (Compound compound in condicion)
+                {
+                    datosCompounds += compound.ToString() + " ";
+                }
+                contador++;
             }
             return datosCompounds;
         }

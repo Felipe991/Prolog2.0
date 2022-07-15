@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Prolonga
 {
-    internal class Verificador : prologBaseVisitor<string>
+    internal class VerificadorArchivo : prologBaseVisitor<string>
     {
         public List<Clausula> clausulas;
         List<Compound> compounds;
@@ -24,7 +24,7 @@ namespace Prolonga
         //Si la clausula Regla contiene un operador ';' (o) entonces hacer varias reglas con la misma cabeza.
         
 
-        public Verificador()
+        public VerificadorArchivo()
         {
             this.clausulas = new List<Clausula>();
             this.compounds = new List<Compound>();
@@ -59,13 +59,16 @@ namespace Prolonga
             {
                 this.clausulas.Add(new Regla(compounds[0].predicado, compounds,operadoresRegla));
             }
-            else if (compounds[0].terminos.Count > 1)
+            else if (compounds.Count == 0)
             {
-                this.clausulas.Add(new Relacion(compounds[0].predicado, compounds[0]));
+                this.clausulas.Add(new Hecho(terminos[0]));
             }
-            else
+            else if(compounds[0].terminos.Count == 1)
             {
                 this.clausulas.Add(new Propiedad(compounds[0].predicado, compounds[0]));
+            }else if(compounds[0].terminos.Count > 1)
+            {
+                this.clausulas.Add(new Relacion(compounds[0].predicado, compounds[0]));
             }
             resetCompoundsData();
             resetCompoundsList();
@@ -88,7 +91,6 @@ namespace Prolonga
         public override string VisitClause([NotNull] prologParser.ClauseContext context)
         {
             var textoContenido = context.GetText();
-            this.clausulas.Add(new Clausula(textoContenido));
             Console.WriteLine("\nVisit Clause: " + textoContenido);
             string retorno = base.VisitClause(context);
             addNuevaClausula();

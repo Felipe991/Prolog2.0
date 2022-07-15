@@ -8,19 +8,30 @@ namespace Prolonga
 {
     internal class Relacion : Hecho
     {
-        List<string> atomos;
-        List<string> operadores;
-        public Relacion(string predicadoPrincipal, Compound compound) : base(predicadoPrincipal, compound)
+        List<Termino> terminosSecundarios;
+        Termino terminoPrincipal;
+        public Relacion(string predicadoPrincipal, Compound compound) : base(predicadoPrincipal)
         {
-            this.atomos = compound.terminos;
-            this.operadores = compound.operadores;
+            terminoPrincipal = compound.terminos[0];
+            terminosSecundarios = compound.terminos.Skip(1).ToList();
         }
 
         public override string ToString()
         {
             return "\nTipo clausula: Relación" +
                    "\nPredicado principal: " + predicadoPrincipal +
-                   "\nCompound: " + compound.ToString();
+                   "\nTermino principal: " + terminoPrincipal.nombreTermino +
+                   "\nTerminos secundarios: " + getTerminosSecundarios();
+        }
+
+        private string getTerminosSecundarios()
+        {
+            string terminosSecundarios = " ";
+            foreach (Termino termino in this.terminosSecundarios)
+            {
+                terminosSecundarios += termino.nombreTermino + " ";
+            }
+            return terminosSecundarios;
         }
     }
 }
