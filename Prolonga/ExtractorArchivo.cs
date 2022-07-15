@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Prolonga
 {
-    internal class VerificadorArchivo : prologBaseVisitor<string>
+    internal class ExtractorArchivo : prologBaseVisitor<string>
     {
         public List<Clausula> clausulas;
         List<Compound> compounds;
@@ -24,7 +24,7 @@ namespace Prolonga
         //Si la clausula Regla contiene un operador ';' (o) entonces hacer varias reglas con la misma cabeza.
         
 
-        public VerificadorArchivo()
+        public ExtractorArchivo()
         {
             this.clausulas = new List<Clausula>();
             this.compounds = new List<Compound>();

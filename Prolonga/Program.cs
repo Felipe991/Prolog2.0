@@ -8,19 +8,20 @@ MotorDeInferencia motorDeInferencia = new MotorDeInferencia(basedeconocimiento);
 bool continuar = true;
 while (continuar)
 {
-    Console.WriteLine("Escoja una opcion: \n" +
-        "1. Consultar" +
-        "2. Salir");
+    Console.WriteLine("Escoja una opcion: " +
+        "\n1. Consultar" +
+        "\n2. Salir");
     string opcion = Console.ReadLine();
     if (opcion == "1")
     {
-        Console.WriteLine("\nIngrese la consulta ('?-Predicado().'):");
+        Console.WriteLine("\nIngrese la consulta:");
         Consulta? consulta = getConsulta();
         if(consulta is not null)
         {
             Console.WriteLine("Se imprimiran los detalles de consulta");
             Console.WriteLine(consulta.ToString());
-            motorDeInferencia.consultar(consulta);
+            
+            getRespuesta(consulta,basedeconocimiento,motorDeInferencia);
         }
     }
     else if (opcion == "2")
@@ -31,6 +32,26 @@ while (continuar)
     {
         Console.WriteLine("\nOpcion invalida");
     }
+}
+
+void getRespuesta(Consulta consulta,BaseDeConocimiento baseDeConocimiento, MotorDeInferencia motorDeInferencia)
+{
+    Clausula? tipoRespuesta = baseDeConocimiento.consultar(consulta);
+    if(tipoRespuesta is null)
+    {
+        consulta.respuesta = "No se encontró el procedimiento '"+consulta.predicado+"'";
+    }else if(tipoRespuesta is Hecho)
+    {
+        consulta
+    }else if (tipoRespuesta is Propiedad) { 
+        
+    }
+    //buscar tipo de conocimiento que pueda contener la respuesta en la base de conocimientos.
+    //Si es un Hecho se extrae los datos y se rellenan los datos de consulta.
+    //Si es una regla escoger tipo de encadenamiento (1 hacia atras, 2 hacia adelante, 3 mixto).
+    //Antes de aplicar encadenamiento hay que preguntar si se quiere una traza.
+    //Si no se encontró el predicado en ninguno de las bases entonces hay que indicar que no existe el procedimiento.
+    //Dependiendo del tipo de argumento que tenga la consulta la respuesta
 }
 
 Consulta getConsulta()
@@ -50,7 +71,7 @@ Consulta getValoresConsulta(string consulta)
     CommonTokenStream commonTokenStream = new CommonTokenStream(Lexer);
     prologParser prologParser = new prologParser(commonTokenStream);
     var prologContext = prologParser.p_text();
-    VerificadorConsulta verificador = new VerificadorConsulta();
+    ExtractorConsulta verificador = new ExtractorConsulta();
 
     verificador.Visit(prologContext);
     return verificador.consulta;
@@ -76,7 +97,7 @@ BaseDeConocimiento getConocimiento(string ruta)
     CommonTokenStream commonTokenStream = new CommonTokenStream(Lexer);
     prologParser prologParser = new prologParser(commonTokenStream);
     var prologContext = prologParser.p_text();
-    VerificadorArchivo verificador = new VerificadorArchivo();
+    ExtractorArchivo verificador = new ExtractorArchivo();
     
     verificador.Visit(prologContext);
     verificador.printClausulas();
@@ -92,7 +113,6 @@ BaseDeConocimiento getConocimiento(string ruta)
 
 string getRuta(){
     string ruta = "";
-    Console.WriteLine("Bienvenido...");
     do
     {
         Console.WriteLine("\nPara comenzar ingrese la ruta del archivo de conocimiento .pl");

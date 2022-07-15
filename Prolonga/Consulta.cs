@@ -11,7 +11,7 @@ namespace Prolonga
     {
         public string predicado = "";
         public List<Termino> terminos = new List<Termino>();
-        public bool respuesta = false;
+        public string respuesta = "";
         Compound compound;
         public Consulta(Compound compound)
         {

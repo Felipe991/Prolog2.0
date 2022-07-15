@@ -32,6 +32,47 @@ namespace Prolonga
             }
         }
 
+        internal Clausula? findHechos(Consulta consulta)
+        {
+            Clausula clausula = null;
+            if (consulta.terminos.Count == 0)
+            {
+                clausula = findHecho(consulta);    
+            }else if (consulta.terminos.Count == 1)
+            {
+                clausula = findPropiedad(consulta);
+            }else if (consulta.terminos.Count > 1)
+            {
+                clausula = findRelacion(consulta);
+            }
+            return clausula;
+        }
+
+        private Clausula? findPropiedad(Consulta consulta)
+        {
+            Clausula clausula = null;
+            foreach (Propiedad propiedad in propiedades)
+            {
+                if (propiedad.predicadoPrincipal.Equals(consulta.predicado) && )
+                {
+                    
+                }
+            }
+            return clausula;
+        }
+
+        private Clausula? findHecho(Consulta consulta)
+        {
+            Clausula clausula = null;
+            foreach (Hecho hecho in hechos)
+            {
+                if (hecho.predicadoPrincipal.Equals(consulta.predicado)){
+                    clausula = hecho;
+                }
+            }
+            return clausula;
+        }
+
         public void printHechos()
         {
             Console.WriteLine("\n****IMPRIMIENDO LISTA DE HECHOS DE LA BASE DE HECHOS****\n");

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Prolonga
 {
-    internal class VerificadorConsulta : prologBaseVisitor<string>
+    internal class ExtractorConsulta : prologBaseVisitor<string>
     {
         string predicado;
         List<string> terminos;
         List<string> operadores;
         Compound compound;
         public Consulta consulta;
-        public VerificadorConsulta()
+        public ExtractorConsulta()
         {
             predicado = "";
             terminos = new List<string>();

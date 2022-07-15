@@ -15,5 +15,16 @@ namespace Prolonga
             this.baseDeHechos = baseDeHechos;
             this.baseDeReglas = baseDeReglas;
         }
+
+        internal Clausula? consultar(Consulta consulta)
+        {
+            Clausula respuesta = null;
+            respuesta = baseDeHechos.findHechos(consulta);
+            if(respuesta is null)
+            {
+                respuesta = baseDeReglas.findReglas(consulta);
+            }
+            return respuesta;
+        }
     }
 }

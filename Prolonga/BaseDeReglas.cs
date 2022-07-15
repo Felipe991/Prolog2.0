@@ -29,5 +29,10 @@ namespace Prolonga
                 Console.WriteLine(regla.ToString());
             }
         }
+
+        internal Clausula? findReglas(Consulta consulta)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
