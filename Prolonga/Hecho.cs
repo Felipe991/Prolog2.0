@@ -8,7 +8,7 @@ namespace Prolonga
 {
     internal class Hecho : Clausula
     {
-        public Hecho(string predicadoPrincipal) : base(predicadoPrincipal)
+        public Hecho(string predicadoPrincipal,List<Compound> compounds) : base(predicadoPrincipal,compounds)
         {
         }
 

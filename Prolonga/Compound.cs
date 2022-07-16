@@ -7,6 +7,7 @@ namespace Prolonga
         public string predicado;
         public List<Termino> terminos;
         public List<string> operadores;
+        public bool hasVariable = false;
 
         public Compound(string predicado, List<string> nombreTerminos, List<string> operadores)
         {
@@ -14,10 +15,12 @@ namespace Prolonga
             this.terminos = new List<Termino>();
             enlistTerminos(nombreTerminos);
             this.operadores = operadores;
+            
         }
 
         private void enlistTerminos(List<string> terminos)
         {
+            List<string> variablesExistentes = new List<string>();
             foreach (string nombreTermino in terminos)
             {
                 if (isAtomo(nombreTermino))
@@ -30,7 +33,15 @@ namespace Prolonga
                 }
                 else if (isVariable(nombreTermino))
                 {
-                    this.terminos.Add(new Variable(nombreTermino));
+                    if (!variablesExistentes.Contains(nombreTermino))
+                    {
+                        this.terminos.Add(new Variable(nombreTermino));
+                        variablesExistentes.Add(nombreTermino);
+                    }
+                    else
+                    {
+                        this.terminos.Add(this.terminos.First(s => s.nombreTermino.Equals(nombreTermino)));
+                    }
                 }
             }
         }
@@ -41,6 +52,7 @@ namespace Prolonga
             Regex regexVariable = new Regex("^[A-Z]$");
             if (regexVariable.IsMatch(nombreTermino))
             {
+                hasVariable = true;
                 isVariable = true;
             }
             return isVariable;

@@ -20,8 +20,9 @@ while (continuar)
         {
             Console.WriteLine("Se imprimiran los detalles de consulta");
             Console.WriteLine(consulta.ToString());
-            
-            getRespuesta(consulta,basedeconocimiento,motorDeInferencia);
+            string tipoEncadenamiento = getTipoEncadenamiento();
+            getRespuesta(consulta,tipoEncadenamiento);
+            showRespuesta(consulta);
         }
     }
     else if (opcion == "2")
@@ -34,25 +35,111 @@ while (continuar)
     }
 }
 
-void getRespuesta(Consulta consulta,BaseDeConocimiento baseDeConocimiento, MotorDeInferencia motorDeInferencia)
+void showRespuesta(Consulta consulta)
 {
-    Clausula? tipoRespuesta = baseDeConocimiento.consultar(consulta);
-    if(tipoRespuesta is null)
+    for(int contador = 0; contador < consulta.respuestas.Count; contador++)
     {
-        consulta.respuesta = "No se encontró el procedimiento '"+consulta.predicado+"'";
-    }else if(tipoRespuesta is Hecho)
-    {
-        consulta
-    }else if (tipoRespuesta is Propiedad) { 
-        
+        Console.WriteLine(consulta.respuestas[contador]);
+        if (contador == (consulta.respuestas.Count-1)) {Console.WriteLine("No quedan mas respuestas");}
+        else {if (!showNextRespuesta()) { break;}}
     }
+}
+
+bool showNextRespuesta()
+{
+    string respuesta = "";
+    Regex rx12 = new Regex("(1|2)");
+    do
+    {
+        Console.WriteLine("\n¿Desea imprimir la siguiente respuesta?" +
+              "\n1.Si" +
+              "\n2.No");
+        respuesta = Console.ReadLine();
+        Console.Write(rx12.IsMatch(respuesta) ? "":"\nOpcion invalida");
+    } while (!rx12.IsMatch(respuesta));
+    return respuesta.Equals("1") ? true:false;
+}
+
+void getRespuesta(Consulta consulta, string tipoEncadenamiento)
+{
+    switch (tipoEncadenamiento)
+    {
+        case "1":
+            Console.WriteLine("No implementado");
+            //motorDeInferencia.encadenarHaciaAdelante(consulta);
+            break;
+        case "2":
+            motorDeInferencia.encadenarHaciaAtras(consulta);
+            break;
+        case "3":
+            Console.WriteLine("No implementado");
+            //motorDeInferencia.encadenarMixto(consulta);
+            break;
+        default:
+            Console.WriteLine("\nTipo de encadenamiento invalido");
+            break;
+    }
+}
+
+string getTipoEncadenamiento()
+{
+    string tipoEncadenamiento = "";
+    do
+    {
+        Console.WriteLine("\nEscoja un tipo de encadenamiento:" +
+            "\n1.Encadenamiento hacia adelante" +
+            "\n2.Encadenamiento hacia atras" +
+            "\n3.Encadenamiento mixto");
+        tipoEncadenamiento = Console.ReadLine();
+    } while (!isEncadenamientoValido(tipoEncadenamiento));
+    return tipoEncadenamiento;
+}
+
+bool isEncadenamientoValido(string? tipoEncadenamiento)
+{
+    if (tipoEncadenamiento == "1")
+    {
+        return true;
+    }
+    else if (tipoEncadenamiento == "2")
+    {
+        return true;
+    }
+    else if (tipoEncadenamiento == "3")
+    {
+        return true;
+    }
+    else
+    {
+        Console.WriteLine("\nOpcion invalida");
+        return false;
+    }
+}
+
+/*void getRespuesta(Consulta consulta,BaseDeConocimiento baseDeConocimiento, MotorDeInferencia motorDeInferencia)
+{
+    if (consulta.hasVariable)
+    {
+        while ()
+        {
+
+        }
+    }
+    else
+    {
+        while ()
+        {
+
+        }
+    }
+    
     //buscar tipo de conocimiento que pueda contener la respuesta en la base de conocimientos.
     //Si es un Hecho se extrae los datos y se rellenan los datos de consulta.
     //Si es una regla escoger tipo de encadenamiento (1 hacia atras, 2 hacia adelante, 3 mixto).
     //Antes de aplicar encadenamiento hay que preguntar si se quiere una traza.
     //Si no se encontró el predicado en ninguno de las bases entonces hay que indicar que no existe el procedimiento.
     //Dependiendo del tipo de argumento que tenga la consulta la respuesta
-}
+}*/
 
 Consulta getConsulta()
 {
@@ -108,7 +195,7 @@ BaseDeConocimiento getConocimiento(string ruta)
     BaseDeReglas baseDeReglas = new BaseDeReglas(verificador.clausulas);
     baseDeReglas.printReglas();
     
-    return new BaseDeConocimiento(baseDeHechos,baseDeReglas);
+    return new BaseDeConocimiento(baseDeHechos,baseDeReglas, verificador.clausulas);
 }
 
 string getRuta(){

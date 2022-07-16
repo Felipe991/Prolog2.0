@@ -10,10 +10,10 @@ namespace Prolonga
     {
         Termino termino;
         Compound compound;
-        public Propiedad(string textoClausula, Compound compound) : base(textoClausula)
+        public Propiedad(string textoClausula, List<Compound> compounds) : base(textoClausula,compounds)
         {
-            this.termino = compound.terminos[0];
-            this.compound = compound;
+            this.termino = compounds[0].terminos[0];
+            this.compound = compounds[0];
         }
         public override string ToString()
         {

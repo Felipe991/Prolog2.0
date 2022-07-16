@@ -10,10 +10,10 @@ namespace Prolonga
     {
         List<Termino> terminosSecundarios;
         Termino terminoPrincipal;
-        public Relacion(string predicadoPrincipal, Compound compound) : base(predicadoPrincipal)
+        public Relacion(string predicadoPrincipal, List<Compound> compounds) : base(predicadoPrincipal,compounds)
         {
-            terminoPrincipal = compound.terminos[0];
-            terminosSecundarios = compound.terminos.Skip(1).ToList();
+            terminoPrincipal = compounds[0].terminos[0];
+            terminosSecundarios = compounds[0].terminos.Skip(1).ToList();
         }
 
         public override string ToString()

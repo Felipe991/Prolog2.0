@@ -10,21 +10,13 @@ namespace Prolonga
     {
         public BaseDeHechos baseDeHechos;
         public BaseDeReglas baseDeReglas;
-        public BaseDeConocimiento(BaseDeHechos baseDeHechos, BaseDeReglas baseDeReglas)
+        public List<Clausula> clausulas;
+        public BaseDeConocimiento(BaseDeHechos baseDeHechos, BaseDeReglas baseDeReglas, List<Clausula> clausulas)
         {
             this.baseDeHechos = baseDeHechos;
             this.baseDeReglas = baseDeReglas;
+            this.clausulas = clausulas;
         }
 
-        internal Clausula? consultar(Consulta consulta)
-        {
-            Clausula respuesta = null;
-            respuesta = baseDeHechos.findHechos(consulta);
-            if(respuesta is null)
-            {
-                respuesta = baseDeReglas.findReglas(consulta);
-            }
-            return respuesta;
-        }
     }
 }

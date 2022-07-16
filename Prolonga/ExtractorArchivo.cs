@@ -61,14 +61,18 @@ namespace Prolonga
             }
             else if (compounds.Count == 0)
             {
-                this.clausulas.Add(new Hecho(terminos[0]));
+                this.clausulas.Add(new Hecho(terminos[0],new List<Compound>()));
+            }
+            else if (compounds[0].terminos.Count == 0)
+            {
+                this.clausulas.Add(new Hecho(compounds[0].predicado, compounds));
             }
             else if(compounds[0].terminos.Count == 1)
             {
-                this.clausulas.Add(new Propiedad(compounds[0].predicado, compounds[0]));
+                this.clausulas.Add(new Propiedad(compounds[0].predicado, compounds));
             }else if(compounds[0].terminos.Count > 1)
             {
-                this.clausulas.Add(new Relacion(compounds[0].predicado, compounds[0]));
+                this.clausulas.Add(new Relacion(compounds[0].predicado, compounds));
             }
             resetCompoundsData();
             resetCompoundsList();
@@ -76,7 +80,7 @@ namespace Prolonga
 
         private void addNuevoCompound()
         {
-            //Console.WriteLine("\nSe ha añadido un compound\n");
+            Console.WriteLine("\nSe ha añadido un compound de predicado "+predicado+"\n");
             compounds.Add(new Compound(predicado, terminos, operadores));
             resetCompoundsData();
         }

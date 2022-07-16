@@ -11,7 +11,7 @@ namespace Prolonga
         List<Compound> compoundsAntecedentes;
         List<List<Compound>> condiciones;
         Compound compoundPrincipal;
-        public Regla(string predicadoPrincipal,List<Compound> compounds, List<string> operadoresRegla) : base(predicadoPrincipal)
+        public Regla(string predicadoPrincipal,List<Compound> compounds, List<string> operadoresRegla) : base(predicadoPrincipal,compounds)
         {
             compoundPrincipal = compounds[0];
             compoundsAntecedentes = compounds.Skip(1).ToList();

@@ -11,7 +11,7 @@ namespace Prolonga
         public List<string> valores; 
         public Variable(string texto) : base(texto)
         {
-            List<string> valroes = new List<string>();
+            this.valores = new List<string>();
         }
     }
 }
