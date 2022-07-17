@@ -21,8 +21,8 @@ while (continuar)
             Console.WriteLine("Se imprimiran los detalles de consulta");
             Console.WriteLine(consulta.ToString());
             string tipoEncadenamiento = getTipoEncadenamiento();
-            getRespuesta(consulta,tipoEncadenamiento);
-            showRespuesta(consulta);
+            getRespuestas(consulta, tipoEncadenamiento);
+            showRespuestas(consulta);
         }
     }
     else if (opcion == "2")
@@ -35,7 +35,25 @@ while (continuar)
     }
 }
 
-void showRespuesta(Consulta consulta)
+void getRespuestas(Consulta consulta,string tipoEncadenamiento)
+{
+    switch (tipoEncadenamiento)
+    {
+    case "1":
+        //encadenarHaciaAdelante(consulta);
+        break;
+    case "2":
+        motorDeInferencia.encadenarHaciaAtras(consulta);
+        break;
+    case "3":
+        //encadenarMixto(consulta);
+        break;
+    default:
+        break;
+    }
+}
+
+void showRespuestas(Consulta consulta)
 {
     for(int contador = 0; contador < consulta.respuestas.Count; contador++)
     {
@@ -58,27 +76,6 @@ bool showNextRespuesta()
         Console.Write(rx12.IsMatch(respuesta) ? "":"\nOpcion invalida");
     } while (!rx12.IsMatch(respuesta));
     return respuesta.Equals("1") ? true:false;
-}
-
-void getRespuesta(Consulta consulta, string tipoEncadenamiento)
-{
-    switch (tipoEncadenamiento)
-    {
-        case "1":
-            Console.WriteLine("No implementado");
-            //motorDeInferencia.encadenarHaciaAdelante(consulta);
-            break;
-        case "2":
-            motorDeInferencia.encadenarHaciaAtras(consulta);
-            break;
-        case "3":
-            Console.WriteLine("No implementado");
-            //motorDeInferencia.encadenarMixto(consulta);
-            break;
-        default:
-            Console.WriteLine("\nTipo de encadenamiento invalido");
-            break;
-    }
 }
 
 string getTipoEncadenamiento()
@@ -166,7 +163,7 @@ Consulta getValoresConsulta(string consulta)
 
 bool isConsultaValida(string? consultaString)
 {
-    Regex rxConsulta = new Regex(@"\?\-(\s)+[a-z]([a-z]|[0-9]|[A-Z])+\((\s)*([A-Z]|_|[a-z]([A-Z]|[a-z]|[0-9])*)(\s)*(\,(\s)*([A-Z]|_|[a-z]([A-Z]|[a-z]|[0-9])*)(\s)*)*\)(\s)*.");
+    Regex rxConsulta = new Regex(@"\?\-(\s)*[a-z]([a-z]|[0-9]|[A-Z])+(\((\s)*(|([A-Z]|_|[a-z]([A-Z]|[a-z]|[0-9])*)(\s)*(\,(\s)*([A-Z]|_|[a-z]([A-Z]|[a-z]|[0-9])*)(\s)*)*)\)|)(\s)*.");
     if (rxConsulta.IsMatch(consultaString))
     {
         Console.WriteLine("\nConsulta valida");

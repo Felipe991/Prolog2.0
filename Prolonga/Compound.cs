@@ -88,7 +88,7 @@ namespace Prolonga
 
         private string getListedTerminos()
         {
-            string listedTerminos = terminos[0].nombreTermino+"["+ terminos[0].GetType() + "]";
+            string listedTerminos = terminos.Count>0 ? terminos[0].nombreTermino+"["+ terminos[0].GetType() + "]":" ";
             for(int index = 0;index<operadores.Count;index++)
             {
                 listedTerminos = listedTerminos + operadores[index] + terminos[index + 1].nombreTermino+"["+ terminos[index + 1].GetType()+ "]";

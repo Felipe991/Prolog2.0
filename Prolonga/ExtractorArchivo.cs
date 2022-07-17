@@ -61,7 +61,9 @@ namespace Prolonga
             }
             else if (compounds.Count == 0)
             {
-                this.clausulas.Add(new Hecho(terminos[0],new List<Compound>()));
+                List<Compound> compoundAux = new List<Compound>();
+                compoundAux.Add(new Compound(terminos[0], new List<string>(), new List<string>()));
+                this.clausulas.Add(new Hecho(terminos[0],compoundAux));
             }
             else if (compounds[0].terminos.Count == 0)
             {

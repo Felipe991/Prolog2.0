@@ -23,7 +23,14 @@ namespace Prolonga
         
         private void addNuevaConsulta()
         {
-            consulta = new Consulta(compound);
+            if(compound is null)
+            {
+                consulta = new Consulta(new Compound(predicado,terminos,operadores));
+            }
+            else
+            {
+                consulta = new Consulta(compound);
+            }
         }
 
         private void addNuevoCompound()
@@ -97,7 +104,15 @@ namespace Prolonga
         {
             var textoContenido = context.GetText();
             Console.WriteLine("Visit atom_term: " + textoContenido);
-            this.terminos.Add(textoContenido);
+            if (!String.IsNullOrEmpty(predicado))
+            {
+                this.terminos.Add(textoContenido);
+            }
+            else
+            {
+                predicado = textoContenido;
+            }
+            
             return base.VisitAtom_term(context);
         }
 
