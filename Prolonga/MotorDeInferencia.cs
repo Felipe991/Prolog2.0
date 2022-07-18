@@ -3,24 +3,10 @@
     internal class MotorDeInferencia
     {
         BaseDeConocimiento baseDeConocimiento;
+        List<string> valoresAgregados = new List<string>();
         public MotorDeInferencia(BaseDeConocimiento baseDeConocimiento)
         {
             this.baseDeConocimiento = baseDeConocimiento;
-        }
-
-        private void addRespuesta(Consulta consulta)
-        {
-            if (consulta.respuestas.Count > 0)
-            {
-                if (!consulta.respuestas[consulta.respuestas.Count - 1].Contains("="))
-                {
-                    consulta.respuestas.Add("True");
-                }
-            }
-            else
-            {
-                consulta.respuestas.Add("True");
-            }
         }
 
         private bool satisfaceConsulta(Clausula clausula, Consulta consulta)
@@ -38,15 +24,9 @@
                     }
                     else
                     {
-                        List<string> valoresAgregados;
                         if (consulta.hasVariable)
                         {
-                            valoresAgregados = variablesEquivalentes(clausula, consulta);
-                            satisfecha = atomosEquivalentes(clausula, consulta) && valoresAgregados.Count > 0;
-                            if (valoresAgregados.Count > 0)
-                            {
-                                addValoresVariable(valoresAgregados, consulta);
-                            }
+                            satisfecha = atomosEquivalentes(clausula, consulta) && variablesEquivalentes(clausula, consulta);
                         }
                         else
                         {
@@ -76,23 +56,46 @@
             if (existeClausula(clausulasAux, consulta))
             {
                 List<Clausula> metas = findClausulasMeta(clausulasAux, consulta);
-                foreach(Clausula meta in metas)
+                this.valoresAgregados.Clear();
+                foreach (Clausula meta in metas)
                 {
                     Consulta consultaAux = new Consulta(meta.compounds[0]);
-                    resolver(meta,consultaAux,clausulasAux);
-                    foreach(string respuesta in consultaAux.respuestas)
+                    if (resolver(meta, consulta))
                     {
-                        consulta.respuestas.Add(respuesta);
+                        foreach (string respuesta in consultaAux.respuestas)
+                        {
+                            consulta.respuestas.Add(respuesta);
+                        }
                     }
+                }
+                if (consulta.respuestas.Count > 0)
+                {
+                    return true;
                 }
             }
             return false;
         }
-        private bool resolver(Clausula meta, Consulta consulta, List<Clausula> clausulas)
+        private bool resolver(Clausula meta, Consulta consulta)
         {
             if (meta is Hecho)
             {
-                addRespuesta(consulta);
+                string respuesta = "";
+                if (consulta.hasVariable)
+                {
+                    foreach(Termino termino in meta.compounds[0].terminos)
+                    {
+                        if(termino is Atomo)
+                        {
+                            respuesta += consulta.terminos[meta.compounds[0].terminos.IndexOf(termino)].nombreTermino + " = ";
+                            respuesta += termino.nombreTermino + " ";
+                        } 
+                    }
+                    consulta.respuestas.Add(respuesta);
+                }
+                else
+                {
+                    consulta.respuestas.Add("True");
+                }
                 return true;
             }
             else
@@ -100,29 +103,39 @@
                 Regla regla = (Regla)meta;
                 foreach (Condicion condicion in regla.condiciones)
                 {
-                    bool satisfecha = false;
+                    List<string> respuestasPreliminares = new List<string>();
+                    bool hasVariable = false, clean = true;
+                    
                     foreach (Premisa premisa in condicion.premisas)
                     {
                         Consulta subConsulta = new Consulta(premisa.compound);
-                        Clausula subMeta= findClausula(clausulas, subConsulta);
-                        if(subMeta is null)
+                        hasVariable = premisa.compound.hasVariable ? true : hasVariable;
+                        if (encadenarHaciaAtras(subConsulta))
                         {
-                            satisfecha = false;
-                            break;
-                        }
-                        if (!resolver(subMeta,subConsulta,clausulas))
-                        {
-                            satisfecha = false;
-                            break;
+                            foreach (string respuesta in subConsulta.respuestas)
+                            {
+                                respuestasPreliminares.Add(respuesta);
+                            }
                         }
                         else
                         {
-                            satisfecha = true;
+                            clean = false;
+                            break;
                         }
                     }
-                    if (satisfecha)
+                    if (clean)
                     {
-                        addRespuesta(consulta);
+                        if (hasVariable)
+                        {
+                            foreach (string respuesta in respuestasPreliminares)
+                            {
+                                
+                            }
+                        }
+                        foreach(string respuesta in respuestasPreliminares)
+                        {
+                            consulta.respuestas.Add(respuesta);
+                        }
                         return true;
                     }
                 }
@@ -141,18 +154,6 @@
                 }
             }
             return metas;
-        }
-
-        private Clausula findClausula(List<Clausula> clausulas, Consulta consulta)
-        {
-            foreach (Clausula clausula in clausulas)
-            {
-                if (satisfaceConsulta(clausula, consulta))
-                {
-                    return clausula;
-                }
-            }
-            return null;
         }
 
         private bool atomosEquivalentes (Clausula clausula, Consulta consulta)
@@ -178,9 +179,9 @@
             return atomosEquivalentes;
         }
         
-        private List<string> variablesEquivalentes(Clausula clausula, Consulta consulta)
+        private bool variablesEquivalentes(Clausula clausula, Consulta consulta)
         {
-            List<string> valoresAgregados = new List<string>();
+            List<string> valoresNuevos = new List<string>();
             List<string> nombresVariables = new List<string>();
             for (int i = 0; i < consulta.terminos.Count; i++)
             {
@@ -194,7 +195,7 @@
                         if (!nombresVariables.Contains(variable.nombreTermino))
                         {
                             variable.valores.Add(terminoClausula.nombreTermino);
-                            valoresAgregados.Add(terminoClausula.nombreTermino);
+                            valoresNuevos.Add(terminoClausula.nombreTermino);
                             nombresVariables.Add(variable.nombreTermino);
                         }
                         else
@@ -202,42 +203,22 @@
                             if (!variable.valores[variable.valores.Count - 1].Equals(terminoClausula.nombreTermino))
                             {
                                 //Console.WriteLine("No tienen el mismo nombre atomo así que no son equivalentes");
-                                return new List<string>();
+                                return false;
                             }
                         }
                     }
                     else
                     {
-                        valoresAgregados.Add(null);
+                        valoresNuevos.Add("True match variables");
                     }
-                    
                 }
             }
-            return valoresAgregados;
-        }
-
-        private void addValoresVariable(List<string> valoresAgregados, Consulta consulta)
-        {
-            int contador = 0;
-            string respuesta = "";
-            foreach (Termino termino in consulta.terminos)
+            foreach (string valor in valoresNuevos)
             {
-                if (termino is Variable)
-                {
-                    if (!String.IsNullOrEmpty(valoresAgregados[contador]))
-                    {
-                        Variable variable = (Variable)termino;
-                        variable.valores.Add(valoresAgregados[contador]);
-                        respuesta += variable.nombreTermino + " = " + valoresAgregados[contador] + " ";
-                    }
-                    
-                    contador++;
-                }
+                this.valoresAgregados.Add(valor);
             }
-            consulta.respuestas.Add(respuesta);
-            
+            return true;
         }
-
 
         public void encadenarHaciaAdelante(Consulta consulta)
         {
@@ -251,8 +232,8 @@
                     Clausula mejorClausula = findMejorClausula(clausulasAplicables);
                     if (satisfaceConsulta(mejorClausula, consulta))
                     {
-                        addRespuesta(consulta);
-                        
+                        consulta.addRespuesta("True", this.valoresAgregados);
+                        this.valoresAgregados.Clear();
                     }
                     aplicarClausula(mejorClausula, clausulasAux);
                     clausulasAux.Remove(mejorClausula);
@@ -267,19 +248,9 @@
         {
             foreach (Clausula clausula in clausulas)
             {
-                if (consulta.hasVariable)
+                if (satisfaceConsulta(clausula, consulta))
                 {
-                    if (atomosEquivalentes(clausula, consulta) && variablesEquivalentes(clausula, consulta).Count > 0)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (atomosEquivalentes(clausula, consulta))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;

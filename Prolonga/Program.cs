@@ -22,7 +22,7 @@ while (continuar)
             Console.WriteLine(consulta.ToString());
             string tipoEncadenamiento = getTipoEncadenamiento();
             getRespuestas(consulta, tipoEncadenamiento);
-            consulta.respuestas = consulta.respuestas.Where(s => s != "").ToList();
+            //consulta.respuestas = consulta.respuestas.Where(s => s != "").ToList();
             showRespuestas(consulta);
         }
     }

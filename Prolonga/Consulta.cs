@@ -50,5 +50,68 @@ namespace Prolonga
             }
             return respuestas;
         }
+        public void addRespuesta(string respuesta, List<string> valoresAgregados)
+        {
+            int contador = 0;
+            string respuestaVariable = "";
+            if (valoresAgregados.Count!=0 && this.hasVariable)
+            {
+                foreach (Termino termino in this.terminos)
+                {
+                    if (termino is Variable)
+                    {
+                        if (!valoresAgregados[contador].Contains("True"))
+                        {
+                            Variable variable = (Variable)termino;
+                            variable.valores.Add(valoresAgregados[contador]);
+                            respuestaVariable += variable.nombreTermino + " = " + valoresAgregados[contador] + " ";
+                        }
+                        else
+                        {
+                            respuestaVariable += valoresAgregados[contador];
+                        }
+                        contador++;
+                    }
+                }
+                this.respuestas.Add(respuestaVariable);
+            }
+            else
+            {
+                this.respuestas.Add(respuesta);
+            }
+        }
+        public void addRespuestaRecursiva(string respuesta, List<string> valoresAgregados)
+        {
+            int contador = 0;
+            string respuestaVariable = "";
+            if (valoresAgregados.Count != 0 && this.hasVariable)
+            {
+                foreach (string valor in valoresAgregados)
+                {
+                    foreach (Termino termino in this.terminos)
+                    {
+                        if (termino is Variable)
+                        {
+                            if (!valoresAgregados[contador].Contains("True"))
+                            {
+                                Variable variable = (Variable)termino;
+                                variable.valores.Add(valoresAgregados[contador]);
+                                respuestaVariable += variable.nombreTermino + " = " + valoresAgregados[contador] + "";
+                            }
+                            else
+                            {
+                                respuestaVariable += valoresAgregados[contador];
+                            }
+                            contador++;
+                        }
+                    }
+                }
+                this.respuestas.Add(respuestaVariable);
+            }
+            else
+            {
+                this.respuestas.Add(respuesta);
+            }
+        }
     }
 }
