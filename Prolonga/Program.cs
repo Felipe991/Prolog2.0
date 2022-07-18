@@ -22,6 +22,7 @@ while (continuar)
             Console.WriteLine(consulta.ToString());
             string tipoEncadenamiento = getTipoEncadenamiento();
             getRespuestas(consulta, tipoEncadenamiento);
+            consulta.respuestas = consulta.respuestas.Where(s => s != "").ToList();
             showRespuestas(consulta);
         }
     }
@@ -40,7 +41,7 @@ void getRespuestas(Consulta consulta,string tipoEncadenamiento)
     switch (tipoEncadenamiento)
     {
     case "1":
-        //encadenarHaciaAdelante(consulta);
+        motorDeInferencia.encadenarHaciaAdelante(consulta);
         break;
     case "2":
         motorDeInferencia.encadenarHaciaAtras(consulta);
@@ -51,6 +52,7 @@ void getRespuestas(Consulta consulta,string tipoEncadenamiento)
     default:
         break;
     }
+    
 }
 
 void showRespuestas(Consulta consulta)
