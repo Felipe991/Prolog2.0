@@ -49,7 +49,7 @@ void getRespuestas(Consulta consulta,string tipoEncadenamiento)
         }
         break;
     case "3":
-        //encadenarMixto(consulta);
+        motorDeInferencia.encadenarMixto(consulta);
         break;
     default:
         break;
@@ -92,7 +92,8 @@ string getTipoEncadenamiento()
     {
         Console.WriteLine("\nEscoja un tipo de encadenamiento:" +
             "\n1.Encadenamiento hacia adelante" +
-            "\n2.Encadenamiento hacia atras");
+            "\n2.Encadenamiento hacia atras" +
+            "\n3.Encadenamiento mixto");
         tipoEncadenamiento = Console.ReadLine();
     } while (!isEncadenamientoValido(tipoEncadenamiento));
     return tipoEncadenamiento;

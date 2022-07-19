@@ -73,9 +73,11 @@ namespace Prolonga
                 }
                 if (consulta.respuestas.Count > 0)
                 {
+                    Console.WriteLine("true");
                     return true;
                 }
             }
+            Console.WriteLine("false");
             return false;
         }
         private bool resolver(Clausula meta, Consulta consulta)
@@ -300,7 +302,7 @@ namespace Prolonga
             return true;
         }
 
-        public void encadenarHaciaAdelante(Consulta consulta)
+        /*public void encadenarHaciaAdelante(Consulta consulta)
         {
             List<Clausula> clausulasAux = new List<Clausula>(); 
             clausulasAux.AddRange(baseDeConocimiento.clausulas);
@@ -323,7 +325,138 @@ namespace Prolonga
                     break;
                 }
             }
+        }*/
+        public bool encadenarHaciaAdelante(Consulta consulta)
+        {
+            List<Clausula> clausulasAux = new List<Clausula>();
+            clausulasAux.AddRange(baseDeConocimiento.clausulas);
+            while (existeClausula(clausulasAux, consulta))
+            {
+                List<Clausula> clausulasAplicables = findAplicables(clausulasAux);
+                if (clausulasAplicables.Count > 0)
+                {
+                    Clausula mejorClausula = findMejorClausula(clausulasAplicables);
+                    if (satisfaceConsulta(mejorClausula, consulta))
+                    {
+                        consulta.addRespuesta("True", this.valoresAgregados);
+                        this.valoresAgregados.Clear();
+                    }
+                    aplicarClausula(mejorClausula, clausulasAux);
+                    clausulasAux.Remove(mejorClausula);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (consulta.respuestas.Count > 0)
+            {
+                Console.WriteLine("true");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("false");
+                return false;
+            }
         }
+
+        public void encadenarMixto(Consulta consulta)
+        {
+            // create a cancellation token for tasks
+            CancellationTokenSource cts = new CancellationTokenSource();
+            var task1 = Task.Factory.StartNew(() => encadenarHaciaAdelante(consulta, cts), cts.Token);
+            var task2 = Task.Factory.StartNew(() => encadenarHaciaAtras(consulta, cts), cts.Token);
+            Task t = Task.WhenAny(task1, task2);
+            if (t.IsCompletedSuccessfully || t.IsCompleted || t.IsCanceled || t.IsFaulted)
+                t.Dispose();
+
+        }
+        public bool encadenarHaciaAdelante(Consulta consulta, CancellationTokenSource source)
+        {
+            var token = source.Token;
+            List<Clausula> clausulasAux = new List<Clausula>();
+            clausulasAux.AddRange(baseDeConocimiento.clausulas);
+            while (existeClausula(clausulasAux, consulta))
+            {
+                List<Clausula> clausulasAplicables = findAplicables(clausulasAux);
+                if (clausulasAplicables.Count > 0)
+                {
+                    Clausula mejorClausula = findMejorClausula(clausulasAplicables);
+                    if (satisfaceConsulta(mejorClausula, consulta))
+                    {
+                        consulta.addRespuesta("True", this.valoresAgregados);
+                        this.valoresAgregados.Clear();
+                    }
+                    aplicarClausula(mejorClausula, clausulasAux);
+                    clausulasAux.Remove(mejorClausula);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (consulta.respuestas.Count > 0)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    return false;
+                }
+                Console.WriteLine("true");
+                source.Cancel();
+                return true;
+            }
+            else
+            {
+                if (token.IsCancellationRequested)
+                {
+                    return false;
+                }
+                Console.WriteLine("false");
+                source.Cancel();
+                return false;
+            }
+        }
+        internal bool encadenarHaciaAtras(Consulta consulta, CancellationTokenSource source)
+        {
+            var token = source.Token;
+            List<Clausula> clausulasAux = new List<Clausula>();
+            clausulasAux.AddRange(baseDeConocimiento.clausulas);
+            if (existeClausula(clausulasAux, consulta))
+            {
+                List<Clausula> metas = findClausulasMeta(clausulasAux, consulta);
+                this.valoresAgregados.Clear();
+                foreach (Clausula meta in metas)
+                {
+                    Consulta consultaAux = new Consulta(meta.compounds[0]);
+                    if (resolver(meta, consulta))
+                    {
+                        foreach (string respuesta in consultaAux.respuestas)
+                        {
+                            consulta.respuestas.Add(respuesta);
+                        }
+                    }
+                }
+                if (consulta.respuestas.Count > 0)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        return false;
+                    }
+                    Console.WriteLine("true");
+                    source.Cancel();
+                    return true;
+                }
+            }
+            if (token.IsCancellationRequested)
+            {
+                return false;
+            }
+            Console.WriteLine("false");
+            source.Cancel();
+            return false;
+        }
+
         private bool existeClausula(List<Clausula> clausulas, Consulta consulta)
         {
             foreach (Clausula clausula in clausulas)
