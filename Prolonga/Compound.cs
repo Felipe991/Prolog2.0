@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Prolonga
 {
@@ -7,6 +8,7 @@ namespace Prolonga
         public string predicado;
         public List<Termino> terminos;
         public List<string> operadores;
+        public List<string> nombresTerminoString;
         public bool hasVariable = false;
 
         public Compound(string predicado, List<string> nombreTerminos, List<string> operadores)
@@ -15,7 +17,9 @@ namespace Prolonga
             this.terminos = new List<Termino>();
             enlistTerminos(nombreTerminos);
             this.operadores = operadores;
-            
+
+            this.nombresTerminoString = new List<string>();
+            this.nombresTerminoString.AddRange(nombreTerminos);
         }
 
         private void enlistTerminos(List<string> terminos)

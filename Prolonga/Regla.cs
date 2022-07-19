@@ -11,12 +11,15 @@ namespace Prolonga
         List<Compound> compoundsAntecedentes;
         List<List<Compound>> premisasCondiciones;
         public List<Condicion> condiciones;
+        public List<string> operadoresRegla;
         Compound compoundPrincipal;
         public Regla(string predicadoPrincipal,List<Compound> compounds, List<string> operadoresRegla) : base(predicadoPrincipal,compounds)
         {
             compoundPrincipal = compounds[0];
             compoundsAntecedentes = compounds.Skip(1).ToList();
             premisasCondiciones = new List<List<Compound>>();
+            this.operadoresRegla = new List<string>();
+            this.operadoresRegla = operadoresRegla;
             enlistCondiciones(compoundsAntecedentes,operadoresRegla);
             condiciones = new List<Condicion>();
             foreach (List<Compound> compoundPremisas in premisasCondiciones)

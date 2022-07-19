@@ -44,7 +44,10 @@ void getRespuestas(Consulta consulta,string tipoEncadenamiento)
         motorDeInferencia.encadenarHaciaAdelante(consulta);
         break;
     case "2":
-        motorDeInferencia.encadenarHaciaAtras(consulta);
+        if (!motorDeInferencia.encadenarHaciaAtras(consulta))
+        {
+            consulta.respuestas.Add("False");
+        }
         break;
     case "3":
         //encadenarMixto(consulta);

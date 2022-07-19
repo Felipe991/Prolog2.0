@@ -1,4 +1,7 @@
-﻿namespace Prolonga
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
+
+namespace Prolonga
 {
     internal class MotorDeInferencia
     {
@@ -100,22 +103,22 @@
             }
             else
             {
-                Regla regla = (Regla)meta;
+                Regla? regla = copyRegla(meta);
+                bool respuesta = false;
+                condicionarRegla(regla, consulta);
                 foreach (Condicion condicion in regla.condiciones)
                 {
-                    List<string> respuestasPreliminares = new List<string>();
+                    List<List<string>> respuestasPreliminares = new List<List<string>>();
                     bool hasVariable = false, clean = true;
                     
                     foreach (Premisa premisa in condicion.premisas)
                     {
                         Consulta subConsulta = new Consulta(premisa.compound);
                         hasVariable = premisa.compound.hasVariable ? true : hasVariable;
+                        
                         if (encadenarHaciaAtras(subConsulta))
                         {
-                            foreach (string respuesta in subConsulta.respuestas)
-                            {
-                                respuestasPreliminares.Add(respuesta);
-                            }
+                            respuestasPreliminares.Add(subConsulta.respuestas);
                         }
                         else
                         {
@@ -125,22 +128,99 @@
                     }
                     if (clean)
                     {
+                        respuesta = true;
+                        string respuestaVariable = "";
                         if (hasVariable)
                         {
-                            foreach (string respuesta in respuestasPreliminares)
-                            {
-                                
-                            }
+                            respuestaVariable = getRespuestaVariable(respuestasPreliminares);
                         }
-                        foreach(string respuesta in respuestasPreliminares)
+                        consulta.respuestas.Add("True" + respuestaVariable);
+                    }
+                }
+                return respuesta;
+            }
+        }
+
+        private Regla? copyRegla(Clausula meta)
+        {
+            Regla reglaAux = (Regla)meta;
+            List<Compound> compoundsAux = getCompounds(meta);
+            return new Regla(reglaAux.predicadoPrincipal,compoundsAux, reglaAux.operadoresRegla);
+        }
+
+        private List<Compound> getCompounds(Clausula meta)
+        {
+            List<Compound> compoundsAux = new List<Compound>();
+            foreach (Compound compound in meta.compounds)
+            {
+                compoundsAux.Add(new Compound(compound.predicado, compound.nombresTerminoString, compound.operadores));
+            }
+            return compoundsAux;
+        }
+
+        private void condicionarRegla(Regla regla, Consulta consulta)
+        {
+            foreach(Termino terminoRegla in regla.compounds[0].terminos)
+            {
+                int posicion = regla.compounds[0].terminos.IndexOf(terminoRegla);
+                Termino terminoConsulta = consulta.terminos[posicion];
+                if ((consulta.terminos[posicion] is Atomo && (terminoRegla is Variable)) || (consulta.terminos[posicion] is Variable && (terminoRegla is Variable)) )
+                {
+                    reemplazarTermino(terminoRegla,terminoConsulta,regla);
+                }
+            }
+        }
+
+        private void reemplazarTermino(Termino terminoRegla, Termino terminoConsulta, Regla regla)
+        {
+            foreach(Condicion condicionRegla in regla.condiciones)
+            {
+                foreach(Premisa premisaCondicion in condicionRegla.premisas)
+                {
+                    for (int i = 0; i < premisaCondicion.compound.terminos.Count; i++)
+                    {
+                        if (premisaCondicion.compound.terminos[i].nombreTermino.Equals(terminoRegla.nombreTermino))
                         {
-                            consulta.respuestas.Add(respuesta);
+                            premisaCondicion.compound.terminos[i] = terminoConsulta;
                         }
-                        return true;
                     }
                 }
             }
+        }
+
+        private bool hasAtomo(Consulta consulta)
+        {
+            foreach (Termino termino in consulta.terminos)
+            {
+                if (termino is Atomo)
+                {
+                    return true;
+                }
+            }
             return false;
+        }
+
+        private string getRespuestaVariable(List<List<string>> respuestasPreliminares)
+        {
+            string respuestaVariable = "( ";
+            foreach (List<string> listaRespuestaPremisa in respuestasPreliminares)
+            {
+                foreach (string respuesta in listaRespuestaPremisa)
+                {
+                    if (respuesta.Contains("="))
+                    {
+                        respuestaVariable += respuesta + " | ";
+                    }
+                }
+            }
+            respuestaVariable += ") ";
+            return respuestaVariable;
+        }
+
+        private bool verifyCondicion(Condicion condicion, List<List<string>> respuestasPreliminares)
+        {
+            //Hacer una lista de valores x cada variable [A-Z]
+            return true;
         }
 
         private List<Clausula> findClausulasMeta(List<Clausula> clausulas, Consulta consulta)
