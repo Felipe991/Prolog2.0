@@ -82,7 +82,7 @@ namespace Prolonga
 
         private void addNuevoCompound()
         {
-            Console.WriteLine("\nSe ha añadido un compound de predicado "+predicado+"\n");
+           //Console.WriteLine("\nSe ha añadido un compound de predicado "+predicado+"\n");
             compounds.Add(new Compound(predicado, terminos, operadores));
             resetCompoundsData();
         }
@@ -90,14 +90,14 @@ namespace Prolonga
         public override string VisitProlog([NotNull] prologParser.PrologContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit Prolog: " + textoContenido);
+            //Console.WriteLine("Visit Prolog: " + textoContenido);
             return base.VisitProlog(context);
         }
         
         public override string VisitClause([NotNull] prologParser.ClauseContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("\nVisit Clause: " + textoContenido);
+            //Console.WriteLine("\nVisit Clause: " + textoContenido);
             string retorno = base.VisitClause(context);
             addNuevaClausula();
             return retorno;
@@ -106,7 +106,7 @@ namespace Prolonga
         public override string VisitCompound_term([NotNull] prologParser.Compound_termContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit Compound_term: " + textoContenido);
+            //Console.WriteLine("Visit Compound_term: " + textoContenido);
             this.insideCompound = true;
             string retorno = base.VisitCompound_term(context);
             this.insideCompound = false;
@@ -117,7 +117,7 @@ namespace Prolonga
         public override string VisitTermlist([NotNull] prologParser.TermlistContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit term list: " + textoContenido);
+            //Console.WriteLine("Visit term list: " + textoContenido);
             return base.VisitTermlist(context); ;
         }
 
@@ -125,14 +125,14 @@ namespace Prolonga
         {
             var textoContenido = context.GetText();
             predicado = textoContenido;
-            Console.WriteLine("Visit predicado: " + textoContenido);
+            //Console.WriteLine("Visit predicado: " + textoContenido);
             return base.VisitPredicado(context);
         }
 
         public override string VisitVariable([NotNull] prologParser.VariableContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit variable: " + textoContenido);
+            //Console.WriteLine("Visit variable: " + textoContenido);
             terminos.Add(textoContenido);
             return base.VisitVariable(context);
         }
@@ -140,21 +140,21 @@ namespace Prolonga
         public override string VisitTerm([NotNull] prologParser.TermContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit Term: "+textoContenido);
+            //Console.WriteLine("Visit Term: "+textoContenido);
             return base.VisitTerm(context);
         }
 
         public override string VisitAtom([NotNull] prologParser.AtomContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit atom: "+textoContenido);
+            //Console.WriteLine("Visit atom: "+textoContenido);
             return base.VisitAtom(context);
         }
 
         public override string VisitAtom_term([NotNull] prologParser.Atom_termContext context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit atom_term: "+textoContenido);
+            //Console.WriteLine("Visit atom_term: "+textoContenido);
             this.terminos.Add(textoContenido);
             return base.VisitAtom_term(context);
         }
@@ -162,7 +162,7 @@ namespace Prolonga
         public override string VisitOperator_([NotNull] prologParser.Operator_Context context)
         {
             var textoContenido = context.GetText();
-            Console.WriteLine("Visit Operator_: "+textoContenido);
+            //Console.WriteLine("Visit Operator_: "+textoContenido);
             if (textoContenido.Equals(":-"))
             {
                 isRegla = true;

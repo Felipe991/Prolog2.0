@@ -22,7 +22,6 @@ while (continuar)
             Console.WriteLine(consulta.ToString());
             string tipoEncadenamiento = getTipoEncadenamiento();
             getRespuestas(consulta, tipoEncadenamiento);
-            //consulta.respuestas = consulta.respuestas.Where(s => s != "").ToList();
             showRespuestas(consulta);
         }
     }
@@ -66,6 +65,9 @@ void showRespuestas(Consulta consulta)
         if (contador == (consulta.respuestas.Count-1)) {Console.WriteLine("No quedan mas respuestas");}
         else {if (!showNextRespuesta()) { break;}}
     }
+    Console.WriteLine("Pulse enter para continuar...");
+    Console.ReadLine();
+    Console.Clear();
 }
 
 bool showNextRespuesta()
@@ -90,8 +92,7 @@ string getTipoEncadenamiento()
     {
         Console.WriteLine("\nEscoja un tipo de encadenamiento:" +
             "\n1.Encadenamiento hacia adelante" +
-            "\n2.Encadenamiento hacia atras" +
-            "\n3.Encadenamiento mixto");
+            "\n2.Encadenamiento hacia atras");
         tipoEncadenamiento = Console.ReadLine();
     } while (!isEncadenamientoValido(tipoEncadenamiento));
     return tipoEncadenamiento;
@@ -117,31 +118,6 @@ bool isEncadenamientoValido(string? tipoEncadenamiento)
         return false;
     }
 }
-
-/*void getRespuesta(Consulta consulta,BaseDeConocimiento baseDeConocimiento, MotorDeInferencia motorDeInferencia)
-{
-    if (consulta.hasVariable)
-    {
-        while ()
-        {
-
-        }
-    }
-    else
-    {
-        while ()
-        {
-
-        }
-    }
-    
-    //buscar tipo de conocimiento que pueda contener la respuesta en la base de conocimientos.
-    //Si es un Hecho se extrae los datos y se rellenan los datos de consulta.
-    //Si es una regla escoger tipo de encadenamiento (1 hacia atras, 2 hacia adelante, 3 mixto).
-    //Antes de aplicar encadenamiento hay que preguntar si se quiere una traza.
-    //Si no se encontró el predicado en ninguno de las bases entonces hay que indicar que no existe el procedimiento.
-    //Dependiendo del tipo de argumento que tenga la consulta la respuesta
-}*/
 
 Consulta getConsulta()
 {
@@ -192,10 +168,10 @@ BaseDeConocimiento getConocimiento(string ruta)
     verificador.printClausulas();
     
     BaseDeHechos baseDeHechos = new BaseDeHechos(verificador.clausulas);
-    baseDeHechos.printHechos();
+    //baseDeHechos.printHechos();
     
     BaseDeReglas baseDeReglas = new BaseDeReglas(verificador.clausulas);
-    baseDeReglas.printReglas();
+    //baseDeReglas.printReglas();
     
     return new BaseDeConocimiento(baseDeHechos,baseDeReglas, verificador.clausulas);
 }
